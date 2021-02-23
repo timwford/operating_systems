@@ -6,7 +6,7 @@
 
 using namespace std;
 
-string prompt = "dash>";
+string prompt = "\033[1;34mdash>\033[0m ";
 
 string QUIT_STRING = "quit";
 string EXIT_STRING = "exit";
