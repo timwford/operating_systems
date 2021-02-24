@@ -68,6 +68,8 @@ public:
 
       ret = getrusage(who, &usage);
 
+      cout << "\033[1;31mUser Time: \033[0m" << usage.ru_utime.tv_sec << "." << usage.ru_utime.tv_usec << endl;
+      cout << "\033[1;31mSystem Time: \033[0m" << usage.ru_stime.tv_sec << "." << usage.ru_stime.tv_usec << endl;
       cout << "\033[1;31mPage faults: " << usage.ru_minflt << "\033[0m" << endl;
       cout << "\033[1;31mSwaps: " << usage.ru_nswap << "\033[0m" << endl;
     }
