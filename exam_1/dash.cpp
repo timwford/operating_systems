@@ -94,14 +94,15 @@ public:
       }
     } else if (command == SYSTEM_STATS) {
 
-      cout << "Version" << endl;
+      cout << endl << "Version: " << endl;
       getInfo("/proc/version");
-      cout << "Uptime" << endl;
+      cout << endl << "Uptime: " << endl;
       getInfo("/proc/uptime");
-      cout << "Memory info" << endl;
+      cout << endl << "Memory info: " << endl;
       getInfo("/proc/meminfo");
-      cout << "CPU info" << endl;
+      cout << endl <<"CPU info: " << endl;
       getInfo("/proc/cpuinfo");
+      cout << endl;
 
     } else {
       char **args = new char *[tokens.size()];
