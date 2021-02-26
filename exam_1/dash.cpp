@@ -1,3 +1,7 @@
+/*
+Contains main filesystem interaction
+*/
+
 #include <cstring>
 #include <iostream>
 #include <stdio.h>
@@ -23,25 +27,11 @@ public:
   string COMMAND_NAME = "cmdnm";
   string PROCESS_ID = "pid";
   string SYSTEM_STATS = "systat";
+  string CHANGE_DIRECTORY = "cd";
 
-  void getInfo(string value) {
-    vector<string> command;
-    command.push_back("cat");
-    command.push_back(value);
-
-    childProcessID = fork();
-      if (childProcessID == 0) {
-        std::vector<char*> args;  
-        for (auto const& token : command)
-          args.push_back(const_cast<char*>(token.c_str()));
-
-        args.push_back(nullptr);
-        execvp(command[0].c_str(), args.data());
-      }
-
-      waitpid = wait(&status);
-  }
-
+  /*
+  Runs most commands, 4 specialty, and then others just using exec
+  */
   void run(vector<string> tokens) {
     if (tokens.size() < 1)
       return;
@@ -65,8 +55,8 @@ public:
         args.push_back(nullptr);
         execvp(command[0].c_str(), args.data());
       }
-
       waitpid = wait(&status);
+
     } else if (command == PROCESS_ID) {
       vector<string> command;
       command.push_back("pgrep");
@@ -81,8 +71,19 @@ public:
         args.push_back(nullptr);
         execvp(command[0].c_str(), args.data());
       }
-
       waitpid = wait(&status);
+
+    } else if (command == CHANGE_DIRECTORY) {
+      int success = chdir(tokens[1].c_str());
+
+      if (success != 0) {
+        string relativePath = workingDirectory() + tokens[1].c_str();
+        success = chdir(relativePath.c_str());
+      }
+
+      if (success != 0) {
+        cout << "Error changing directory" << endl;
+      }
     } else if (command == SYSTEM_STATS) {
 
       cout << "Version" << endl;
@@ -94,7 +95,6 @@ public:
       cout << "CPU info" << endl;
       getInfo("/proc/cpuinfo");
 
-
     } else {
       char **args = new char *[tokens.size()];
       for (size_t i = 0; i < tokens.size(); i++) {
@@ -102,6 +102,7 @@ public:
         strcpy(args[i], tokens[i].c_str());
       }
 
+      // borrowed from your example code
       childProcessID = fork();
       if (childProcessID == 0) {
         // child gets 0
@@ -124,4 +125,32 @@ public:
       cout << "\033[1;31mSwaps: " << usage.ru_nswap << "\033[0m" << endl;
     }
   }
+
+  private:
+    /*
+    Utility function to print system stuff
+    */
+    void getInfo(string value) {
+      vector<string> command;
+      command.push_back("cat");
+      command.push_back(value);
+
+      childProcessID = fork();
+        if (childProcessID == 0) {
+          std::vector<char*> args;  
+          for (auto const& token : command)
+            args.push_back(const_cast<char*>(token.c_str()));
+
+          args.push_back(nullptr);
+          execvp(command[0].c_str(), args.data());
+        }
+
+        waitpid = wait(&status);
+    }
+  
+    string workingDirectory()
+    {
+      char temp[255];
+      return ( getcwd(temp, sizeof(temp)) ? std::string( temp ) : std::string("") );
+    }
 };
