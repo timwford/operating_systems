@@ -74,7 +74,15 @@ public:
       waitpid = wait(&status);
 
     } else if (command == CHANGE_DIRECTORY) {
-      int success = chdir(tokens[1].c_str());
+      int success;
+
+      if (tokens.size() == 1) {
+        success = chdir("/");
+      }
+
+      if (success != 0) {
+        success = chdir(tokens[1].c_str());
+      }
 
       if (success != 0) {
         string relativePath = workingDirectory() + tokens[1].c_str();
