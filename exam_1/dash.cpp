@@ -76,7 +76,7 @@ public:
       if (childProcessID == 0) {
         std::vector<char*> args;  
         for (auto const& token : command)
-          args.__emplace_back(const_cast<char*>(token.c_str()));
+          args.push_back(const_cast<char*>(token.c_str()));
 
         args.push_back(nullptr);
         execvp(command[0].c_str(), args.data());
