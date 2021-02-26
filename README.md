@@ -53,7 +53,9 @@ To start the program, build and then run `./dash`.
 There are a couple of custom commands for your own personal benefit/enjoyment. Here are their details:
 
 ```cmdnm <process_id>``` - prints the command used to initiate the process_id from the arguments
+
 ```pid <command>``` - prints the process id or ids associated with a command name, supplied from the arguments
+
 ```systat``` - prints various interesting system stat stuff
 
 Everything else about the shell should work similar to what you're familiar to, minus all the good parts that make shell like ZSH such a pleasure to use.
