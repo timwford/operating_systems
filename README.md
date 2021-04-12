@@ -54,6 +54,10 @@ The private functions:
 
 `handleSingleCommand(vector<string> tokens)` - this is the fall back for an ordinary command that doesn't do any fancy pipes, redirects, or whatnot. This is largely also borrowed from exam 1, just here because it was rearranged (for the better).
 
+### PID Manager
+
+There is a PID manager that has associated required functions from your API you laid out. It also has a testPID() function that runs a bunch of threads and tests the process management capabilities of the functions I wrote. It is thread safe, locking and unlocking when necessary.
+
 ### makefile
 
 Just your good old, classic makefile that got made, scaled to really cool modular structure, didn't work, messed with it for a day or two, didn't get anywhere, and converted back to just your regular good ol' classic makefile again. [Tradition!](https://www.youtube.com/watch?v=gRdfX7ut8gw). It does have a couple of targets now though. Here they are:
@@ -121,6 +125,6 @@ Various levels of functionality were supported in each environment. Here's a sum
 
 Bugs:
 
-- Occasionally backspace remaps itself to `^?` and I'm very unsure why, it doesn't seem to happen reliably.
+- Occasionally backspace remaps itself to `^?` and I'm very unsure why, it doesn't seem to happen reliably. (WAIT NOW IT'S DOING IT IN NATIVE ZSH TOO WTF IS GOING ON)
 - Pipes have the issue described above in the Program Structure Section
 - There are probably other bugs so this is my blanket catchall for those :P
