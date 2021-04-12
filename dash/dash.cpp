@@ -11,8 +11,8 @@ Contains main filesystem interaction
 #include <sys/time.h>
 #include <sys/wait.h>
 #include <sys/stat.h>
-#include <fcntl.h>    /* For O_RDWR */
-#include <unistd.h>   /* For open(), creat() */
+#include <fcntl.h>
+#include <unistd.h>
 #include <vector>
 #include <algorithm>
 
@@ -39,12 +39,8 @@ public:
   string CHANGE_DIRECTORY = "cd";
   string MEMORY_MANAGER = "memman";
   
-  
   int PAGE_SIZE = 4096;
 
-  /* 
-  Runs most commands, 4 specialty, and then others just using exec
-  */
   void run(vector<string> tokens) {
     if (tokens.size() < 1)
       return;
@@ -52,6 +48,22 @@ public:
     string command = tokens[0];
 
     if (command == COMMAND_NAME) {
+      printCommandName(tokens);
+    } else if (command == PROCESS_ID) {
+      printPID(tokens);
+    } else if (command == CHANGE_DIRECTORY) {
+      changeDir(tokens);
+    } else if (command == SYSTEM_STATS) {
+      printStats();
+    } else if (command == MEMORY_MANAGER) {
+      memman(tokens);
+    } else {
+      handleCommand(tokens);
+    }
+  }
+
+  private:
+    void printCommandName(vector<string> tokens) {
       vector<string> command;
       command.push_back("ps");
       command.push_back("-p");
@@ -73,8 +85,9 @@ public:
         }
       }
       waitpid = wait(&status);
+    }
 
-    } else if (command == PROCESS_ID) {
+    void printPID(vector<string> tokens) {
       vector<string> command;
       command.push_back("pgrep");
       command.push_back(tokens.back());
@@ -89,8 +102,9 @@ public:
         execvp(command[0].c_str(), args.data());
       }
       waitpid = wait(&status);
+    }
 
-    } else if (command == CHANGE_DIRECTORY) {
+    void changeDir(vector<string> tokens) {
       int success;
 
       if (tokens.size() == 1) {
@@ -109,8 +123,9 @@ public:
       if (success != 0) {
         cout << "Error changing directory" << endl;
       }
-    } else if (command == SYSTEM_STATS) {
+    }
 
+    void printStats() {
       cout << endl << "Version: " << endl;
       getInfo("/proc/version");
       cout << endl << "Uptime: " << endl;
@@ -120,20 +135,8 @@ public:
       cout << endl <<"CPU info: " << endl;
       getInfo("/proc/cpuinfo");
       cout << endl;
-
-    } else if (command == MEMORY_MANAGER) {
-      memman(tokens);
-    } else if (command == PID_MANAGER_TEST) {
-
-    } else {
-      handleCommand(tokens);
     }
-  }
 
-  private:
-    /*
-    Utility function to print system stuff
-    */
     void getInfo(string value) {
       vector<string> command;
       command.push_back("cat");
@@ -159,16 +162,16 @@ public:
     }
 
     
-    void memman(vector<string> params){
-      if(params.size() != 2)
+    void memman(vector<string> tokens){
+      if(tokens.size() != 2)
         return;
 
-      string s = params[1];
+      string s = tokens[1];
       for(int i = 0; i < s.length(); i++)
         if(!isdigit(s[i]))
             return;
 
-      int address = stoi(params[1]);
+      int address = stoi(tokens[1]);
       int page = address / PAGE_SIZE;
       int offset = address % PAGE_SIZE;
 
@@ -178,8 +181,6 @@ public:
   }
 
   void handleCommand(vector<string> tokens) {
-    
-
     // find if there is a pipe or redirect
     bool isPipe = false;
     bool isRedirect = false;

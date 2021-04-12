@@ -8,5 +8,8 @@ OBJ = main.o dash.o
 dash: $(OBJ)
 	$(CC) -o $@ $^
 
+manage:
+	g++ -pthread pidManager.cpp -o manage
+
 clean :
 	-rm $(OBJ)
