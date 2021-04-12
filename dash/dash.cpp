@@ -123,6 +123,8 @@ public:
 
     } else if (command == MEMORY_MANAGER) {
       memman(tokens);
+    } else if (command == PID_MANAGER_TEST) {
+
     } else {
       handleCommand(tokens);
     }
