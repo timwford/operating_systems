@@ -23,7 +23,7 @@ def get_allocated() -> []:
     """
     get allocated resources currently by summing the columns of the allocation matrix.
     This gives us a clear idea of what the system is "using" at the moment, which will help
-    us make sure that any additional requests for resources wont result in deadlock.
+    us make sure that any additional requests for resources won't result in deadlock.
 
     :return: an array of the columns summed, representing what resources are currently allocated
     """
@@ -59,7 +59,7 @@ def get_available() -> []:
     Then, we can use that available vector to understand which process can run/whether a process
     would created deadlock.
     """
-    return list(map(sub, resources, get_allocated()))
+    return [(0 if x < 0 else x) for x in list(map(sub, resources, get_allocated()))]
 
 
 def detect_deadlock():
@@ -72,20 +72,19 @@ def detect_deadlock():
 
     :return: returns (INT) index of the resource that works or False if none are present
     """
-    isOverdrawn = True
 
-    for index, need in enumerate(needed):
-        canRunProcess = True
-        for i in range(len(need)):
-            if get_available()[i] < need[i]:
-                canRunProcess = False
+    for index in range(len(needed)):
+        # is this need less than our available resources? (safe to run)
+        canRun = []
+        for a, n in zip(get_available(), needed[index]):
+            if a < n:
+                canRun.append(False)
 
-        if canRunProcess:
-            print(f"Resource {need} can be safely allocated")
-            isOverdrawn = False
+        if len(canRun) == 0:
+            print(f"Resource {needed[index]} can be safely allocated")
             return index
 
-    return isOverdrawn
+    return False
 
 
 if __name__ == "__main__":
@@ -95,13 +94,27 @@ if __name__ == "__main__":
     # initial check for deadlock, check and see if anything in the "need" array has resources that are allowed
     # to be met
 
+    is_locked = False
+
     while len(needed) > 0:
         result = detect_deadlock()
         if result is not False:
-            process_row = needed.pop(result)
-            allocated_for_process = allocation.pop(result)
+            try:
+
+                process_row = needed.pop(result)
+                allocation[result] = list(map(add, allocation[result], process_row))
+                available = get_available()
+
+                print(f"Removing resources needed by {result} process using {allocation[result]}")
+                allocation[result] = [0 for x in allocation[result]]
+            except IndexError as e:
+                print(e)
         else:
+            is_locked = True
             print("Deadlock Detected")
+
+    if not is_locked:
+        print("Processes have been completed sucessfully")
 
     # if we're good, loop through the safe options and
 
