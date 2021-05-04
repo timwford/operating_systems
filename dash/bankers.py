@@ -81,7 +81,7 @@ def detect_deadlock():
                 canRun.append(False)
 
         if len(canRun) == 0:
-            print(f"Resource {needed[index]} can be safely allocated")
+            print(f"Resource {needed[index]} at index {index} can be safely allocated")
             return index
 
     return False
@@ -100,12 +100,12 @@ if __name__ == "__main__":
         result = detect_deadlock()
         if result is not False:
             try:
-
                 process_row = needed.pop(result)
                 allocation[result] = list(map(add, allocation[result], process_row))
                 available = get_available()
 
                 print(f"Removing resources needed by {result} process using {allocation[result]}")
+                print("~~~~~~~")
                 allocation[result] = [0 for x in allocation[result]]
             except IndexError as e:
                 print(e)
@@ -115,17 +115,3 @@ if __name__ == "__main__":
 
     if not is_locked:
         print("Processes have been completed sucessfully")
-
-    # if we're good, loop through the safe options and
-
-    """
-        for i in range(len(needed[0])):
-        col = []
-        for j in range(0, len(needed)):
-            col.append(needed[j][i])
-        if (sum(col)) > 0:
-            print(col)
-            print(sum(col))
-            print("~~~~")
-
-    """
