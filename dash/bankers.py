@@ -3,13 +3,6 @@ from operator import sub, add
 
 import random
 
-allocation = [
-    [2, 0, 1, 1],
-    [0, 1, 0, 0],
-    [1, 0, 1, 1],
-    [1, 1, 0, 1]
-]
-
 
 def get_allocated() -> []:
     """
@@ -31,7 +24,7 @@ def get_allocated() -> []:
 
 def get_available() -> []:
     """
-    TODO Oh man this is a doozy the example is wrong on this one but it looks to be
+    Oh man this is a doozy the example is wrong on this one but it looks to be
     total - allocated is this number, which would tell us how many we have available left.
     Then, we can use that available vector to understand which process can run/whether a process
     would created deadlock.
@@ -47,7 +40,7 @@ def detect_deadlock():
     needs matrix that satisfy that, then we have "overdrawn our account" and we are not in a safe state.
     Deadlock is possible!
 
-    :return: returns (INT) index of the resource that works or False if none are present
+    :return: returns (INT) index of the resource that works or False if none that are suitable are present
     """
 
     for index in range(len(needed)):
@@ -65,6 +58,14 @@ def detect_deadlock():
 
 
 if __name__ == "__main__":
+
+    # use default allocation array?
+    r = input("Run alternate? (Y/n)")
+    if r == "Y" or r == "y":
+        generate = True
+    else:
+        generate = False
+
     """
     Generate process info
     
@@ -86,13 +87,15 @@ if __name__ == "__main__":
     resources = [5, 2, 4, 3]
     r_n = len(resources)
 
-    # use default allocation array?
-    generate = True
-
     num_tasks = 10
 
     if generate:
-        resources *= 2
+        """
+        This sequence isn't too sophisticated, it generates what it thinks will be a resource set
+        and allocated/needed array to make something that could either end in deadlock due to over-allocation
+        or could end with all processes being 
+        """
+        resources *= 3
         allocation = []
         needed = []
         ceiling_resource = sum(resources) / len(resources)
@@ -112,9 +115,10 @@ if __name__ == "__main__":
             needed.append(row)
     else:
         """
+        This is the default sequence! This one is guaranteed to finish without deadlock.
+        
         This is an array that hold the number of used resources (on columns) per process using them (on a row) 
         """
-
         allocation = [
             [2, 0, 1, 1],
             [0, 1, 0, 0],
@@ -145,7 +149,7 @@ if __name__ == "__main__":
     is_locked = False
     command = None
 
-    while len(needed) > 0:
+    while len(needed) > 0 and not is_locked:
         result = detect_deadlock()
         if result is not False:
             try:
@@ -160,8 +164,9 @@ if __name__ == "__main__":
                 print(e)
         else:
             is_locked = True
-            print("Deadlock Detected")
-            break
+            print(f"Process failed to allocate")
 
     if not is_locked:
         print("Processes have been completed sucessfully")
+    else:
+        print("Deadlock Detected")
