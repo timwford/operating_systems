@@ -1,16 +1,8 @@
 # use this for hot map magic to sum columns
 from operator import sub, add
 
-"""
-This is an array that holds the maximum number of useable resources per resource. Resources could be
-hardware devices or cores or other usable computer resources. The count dictates the total number of
-those resources available. 
-"""
-resources = [5, 2, 4, 3]
+import random
 
-"""
-This is an array that hold the number of used resources (on columns) per process using them (on a row) 
-"""
 allocation = [
     [2, 0, 1, 1],
     [0, 1, 0, 0],
@@ -35,21 +27,6 @@ def get_allocated() -> []:
         allocated[i] += sum(col)
 
     return allocated
-
-
-"""
-This is an array that holds the "needed" processes to complete the work. For example, a process with
-requirements [0, 0, 1, 0] needs 0 of every resource type except the 2nd (0-indexed) one which has a 
-requirement of 1. This means that if this process is to run 'safely' according to Bankers algorithm,
-then the 'available' resource vector had at least better read [0,0,1,0] to accommodate for that additional
-resource, otherwise a deadlock is possible due to overallocation. 
-"""
-needed = [
-    [1, 1, 0, 0],
-    [0, 1, 1, 2],
-    [3, 1, 0, 0],
-    [0, 0, 1, 0]
-]
 
 
 def get_available() -> []:
@@ -88,6 +65,77 @@ def detect_deadlock():
 
 
 if __name__ == "__main__":
+    """
+    Generate process info
+    
+    Since we know we need to generate a couple of different things, we may as well list them:
+    1. Resources - pretend this is what we're divying up, and should be decided by the user
+    2. Allocated - this should be a portion of what we're allowed, summed on the columns. If we
+        allocate too much here, then it's awkward cause then we're in an unsafe state and we 
+        can get deadlocked. But ideally this matrix sums along the columns to be less than our
+        resources matrix plus a little wiggle room so that we can wrap some processes up.
+    3. Needed - Speaking of wrapping processes up, our final little bit of wiggle room needs to fit
+        whatever these values are 
+        
+        
+    
+    This is an array that holds the maximum number of useable resources per resource. Resources could be
+    hardware devices or cores or other usable computer resources. The count dictates the total number of
+    those resources available. 
+    """
+    resources = [5, 2, 4, 3]
+    r_n = len(resources)
+
+    # use default allocation array?
+    generate = True
+
+    num_tasks = 10
+
+    if generate:
+        resources *= 2
+        allocation = []
+        needed = []
+        ceiling_resource = sum(resources) / len(resources)
+
+        for i in range(num_tasks):
+            row = []
+            for j in range(r_n):
+                row.append(random.randint(0, int(ceiling_resource * 0.3)))
+
+            allocation.append(row)
+
+        for i in range(num_tasks):
+            row = []
+            for j in range(r_n):
+                row.append(random.randint(0, int(ceiling_resource * 0.3)))
+
+            needed.append(row)
+    else:
+        """
+        This is an array that hold the number of used resources (on columns) per process using them (on a row) 
+        """
+
+        allocation = [
+            [2, 0, 1, 1],
+            [0, 1, 0, 0],
+            [1, 0, 1, 1],
+            [1, 1, 0, 1]
+        ]
+
+        """
+        This is an array that holds the "needed" processes to complete the work. For example, a process with
+        requirements [0, 0, 1, 0] needs 0 of every resource type except the 2nd (0-indexed) one which has a 
+        requirement of 1. This means that if this process is to run 'safely' according to Bankers algorithm,
+        then the 'available' resource vector had at least better read [0,0,1,0] to accommodate for that additional
+        resource, otherwise a deadlock is possible due to overallocation. 
+        """
+        needed = [
+            [1, 1, 0, 0],
+            [0, 1, 1, 2],
+            [3, 1, 0, 0],
+            [0, 0, 1, 0]
+        ]
+
     #
     # Deadlock detection
     #
@@ -95,6 +143,7 @@ if __name__ == "__main__":
     # to be met
 
     is_locked = False
+    command = None
 
     while len(needed) > 0:
         result = detect_deadlock()
@@ -112,6 +161,7 @@ if __name__ == "__main__":
         else:
             is_locked = True
             print("Deadlock Detected")
+            break
 
     if not is_locked:
         print("Processes have been completed sucessfully")
