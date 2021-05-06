@@ -167,6 +167,6 @@ if __name__ == "__main__":
             print(f"Process failed to allocate")
 
     if not is_locked:
-        print("Processes have been completed sucessfully")
+        print("Processes have been completed successfully")
     else:
         print("Deadlock Detected")

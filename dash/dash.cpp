@@ -38,6 +38,7 @@ public:
   string SYSTEM_STATS = "systat";
   string CHANGE_DIRECTORY = "cd";
   string MEMORY_MANAGER = "memman";
+  string BANKERS_ALGORITHM = "BANK";
   
   int PAGE_SIZE = 4096;
 
@@ -57,6 +58,9 @@ public:
       printStats();
     } else if (command == MEMORY_MANAGER) {
       memman(tokens);
+    } else if (command == BANKERS_ALGORITHM) {
+      //vector<string> t {"python", "bankers.py"};
+      //handleSingleCommand(t);
     } else {
       handleCommand(tokens);
     }
